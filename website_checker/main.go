@@ -51,7 +51,13 @@ func launchWebServer(config utils.Config) {
 }
 
 func main() {
-	configFile := "properties.yml"
+
+	var configFile string
+	if len(os.Args) == 2 {
+		configFile = os.Args[1]
+	} else {
+		configFile = "properties.yml"
+	}
 	conf := utils.ReadConfig(configFile)
 
 	launchWebsiteCheckerCron(conf)
