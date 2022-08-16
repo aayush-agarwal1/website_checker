@@ -38,7 +38,7 @@ func main() {
 		}
 	}()
 
-	var concurrency int = 2
+	var concurrency int = 3
 	go func() {
 		status_checker.ConcurrentStatusCheck(concurrency)
 	}()

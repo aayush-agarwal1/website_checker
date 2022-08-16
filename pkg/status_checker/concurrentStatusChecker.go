@@ -13,12 +13,12 @@ func ConcurrentStatusCheck(concurrency int) {
 
 	channel := make(chan string, concurrency*2)
 
-	for i := 0; i < concurrency; i++ {
-		go func(channel chan string) {
+	for i := 1; i <= concurrency; i++ {
+		go func(channel chan string, workerNo int) {
 			for {
 				select {
 				case website := <-channel:
-					ctx := context.Background()
+					ctx := context.WithValue(context.Background(), "workerNo", workerNo)
 					if status, _ := checker.Check(ctx, website); status {
 						model.UpdateWebsiteStatus(website, model.UP)
 					} else {
@@ -26,7 +26,7 @@ func ConcurrentStatusCheck(concurrency int) {
 					}
 				}
 			}
-		}(channel)
+		}(channel, i)
 	}
 
 	for {
