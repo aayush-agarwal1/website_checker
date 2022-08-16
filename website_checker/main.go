@@ -2,23 +2,28 @@ package main
 
 import (
 	"errors"
-	"fmt"
+	"github.com/gorilla/mux"
+	"log"
 	"net/http"
 	"os"
 )
 
 func basePath(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("got / request\n")
+	log.Printf("%s %s\n", r.Method, r.RequestURI)
 	http.Error(w, "Invalid call, please check URI", http.StatusBadRequest)
 }
 
 func main() {
-	http.HandleFunc("/", basePath)
-	err := http.ListenAndServe(":8080", nil)
+	var host string = ""
+	var port string = ":8080"
+	router := mux.NewRouter()
+	router.HandleFunc("/", basePath)
+	log.Printf("Starting Server at: %s%s", host, port)
+	err := http.ListenAndServe(host+port, router)
 	if errors.Is(err, http.ErrServerClosed) {
-		fmt.Printf("Server closed\n")
+		log.Printf("Server closed\n")
 	} else if err != nil {
-		fmt.Printf("error starting server: %s\n", err)
+		log.Printf("error starting server: %s\n", err)
 		os.Exit(1)
 	}
 }
