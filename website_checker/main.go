@@ -1,7 +1,10 @@
 package main
 
 import (
+	"context"
 	"github.com/aayush-agarwal1/website_checker/pkg/api"
+	"github.com/aayush-agarwal1/website_checker/pkg/model"
+	"github.com/aayush-agarwal1/website_checker/pkg/status_checker"
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
@@ -36,6 +39,21 @@ func main() {
 			log.Printf("%s\n", err)
 		}
 	}()
+
+	var checker status_checker.StatusChecker = status_checker.HTTPChecker{}
+	go func(statusChecker status_checker.StatusChecker) {
+		for {
+			for _, website := range model.GetWebsiteList() {
+				ctx := context.Background()
+				if status, _ := statusChecker.Check(ctx, website); status {
+					model.UpdateWebsiteStatus(website, model.UP)
+				} else {
+					model.UpdateWebsiteStatus(website, model.DOWN)
+				}
+			}
+			time.Sleep(5 * time.Second)
+		}
+	}(checker)
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
