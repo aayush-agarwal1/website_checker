@@ -34,7 +34,6 @@ func InsertNewWebsite(website string) (err error, wasPresent bool) {
 }
 
 func GetWebsiteList() (websites []string) {
-	websites = make([]string, len(websiteMapObject))
 	for website := range websiteMapObject {
 		websites = append(websites, website)
 	}
