@@ -8,14 +8,14 @@ import (
 	"strings"
 )
 
+type postRequestBody struct {
+	Websites []string `json:"websites"`
+}
+
 func PostWebsites(w http.ResponseWriter, r *http.Request) {
 	log.Printf("%s %s\n", r.Method, r.RequestURI)
 
-	type RequestBody struct {
-		Websites []string `json:"websites"`
-	}
-
-	var websites RequestBody
+	var websites postRequestBody
 
 	if err := json.NewDecoder(r.Body).Decode(&websites); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -38,7 +38,7 @@ func PostWebsites(w http.ResponseWriter, r *http.Request) {
 
 func GetWebsites(w http.ResponseWriter, r *http.Request) {
 	name := r.URL.Query().Get("name")
-	log.Printf("%s %s %s\n", r.Method, r.RequestURI, name)
+	log.Printf("%s %s\n", r.Method, r.RequestURI)
 	websites := strings.Split(name, ",")
 	var out []byte
 	out, _ = json.Marshal(model.GetWebsiteStatusMap(websites))
