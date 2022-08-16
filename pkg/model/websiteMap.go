@@ -20,8 +20,13 @@ func init() {
 	websiteMapObject = newWebsiteMap()
 }
 
+//Singleton Pattern
 func newWebsiteMap() map[string]WebsiteProperties {
-	return make(map[string]WebsiteProperties)
+	if websiteMapObject == nil {
+		return make(map[string]WebsiteProperties)
+	} else {
+		return nil
+	}
 }
 
 func InsertNewWebsite(website string) (err error, wasPresent bool) {
@@ -42,7 +47,7 @@ func GetWebsiteList() (websites []string) {
 	return
 }
 
-func GetWebsiteMapObject(websites []string) (localWebsiteMapObject map[string]WebsiteProperties) {
+func GetWebsitePropertiesMap(websites []string) (localWebsiteMapObject map[string]WebsiteProperties) {
 	if (len(websites) == 0) || (len(websites) == 1 && websites[0] == "") {
 		localWebsiteMapObject = websiteMapObject
 	} else {
@@ -76,4 +81,11 @@ func GetWebsiteStatusMap(websites []string) (websiteStatusMap map[string]string)
 		}
 	}
 	return
+}
+
+func UpdateWebsiteStatus(website string, status State) {
+	if websiteProperties, isPresent := websiteMapObject[website]; isPresent {
+		websiteProperties.Status = status
+		websiteMapObject[website] = websiteProperties
+	}
 }
