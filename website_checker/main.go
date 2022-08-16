@@ -13,11 +13,6 @@ import (
 	"time"
 )
 
-func basePath(w http.ResponseWriter, r *http.Request) {
-	log.Printf("%s %s\n", r.Method, r.RequestURI)
-	http.Error(w, "Invalid call, please check URI", http.StatusBadRequest)
-}
-
 func launchWebsiteCheckerCron(conf map[string]string) {
 	concurrency, _ := strconv.Atoi(conf["concurrency"])
 	delay, _ := strconv.Atoi(conf["cron.delaySeconds"])
@@ -33,7 +28,6 @@ func launchWebServer(conf map[string]string) {
 	writeTimeoutSeconds, _ := strconv.Atoi(conf["server.writeTimeoutSeconds"])
 	readTimeoutSeconds, _ := strconv.Atoi(conf["server.readTimeoutSeconds"])
 	router := mux.NewRouter()
-	router.HandleFunc("/", basePath)
 	router.HandleFunc("/websites", api.PostWebsites).Methods(http.MethodPost)
 	router.HandleFunc("/websites", api.GetWebsites).Methods(http.MethodGet)
 	log.Printf("Starting server at: %s:%s", host, port)
