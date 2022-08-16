@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/aayush-agarwal1/website_checker/pkg/api"
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
@@ -19,6 +20,7 @@ func main() {
 	port := ":8080"
 	router := mux.NewRouter()
 	router.HandleFunc("/", basePath)
+	router.HandleFunc("/websites", api.PostWebsites).Methods(http.MethodPost)
 	log.Printf("Starting server at: %s%s", host, port)
 
 	srv := &http.Server{
