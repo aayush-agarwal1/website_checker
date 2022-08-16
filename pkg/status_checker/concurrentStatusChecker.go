@@ -6,33 +6,33 @@ import (
 	"time"
 )
 
-var checker StatusChecker
+func worker(channel chan string, workerNo int, checker StatusChecker) {
+	for {
+		select {
+		case website := <-channel:
+			ctx := context.WithValue(context.Background(), "workerNo", workerNo)
+			if status, _ := checker.Check(ctx, website); status {
+				model.UpdateWebsiteStatus(website, model.UP)
+			} else {
+				model.UpdateWebsiteStatus(website, model.DOWN)
+			}
+		}
+	}
+}
 
-func ConcurrentStatusCheck(concurrency int) {
-	checker = HTTPChecker{}
+func ConcurrentStatusCheck(concurrency int, delay int) {
 
 	channel := make(chan string, concurrency*2)
+	var checker StatusChecker = HTTPChecker{}
 
 	for i := 1; i <= concurrency; i++ {
-		go func(channel chan string, workerNo int) {
-			for {
-				select {
-				case website := <-channel:
-					ctx := context.WithValue(context.Background(), "workerNo", workerNo)
-					if status, _ := checker.Check(ctx, website); status {
-						model.UpdateWebsiteStatus(website, model.UP)
-					} else {
-						model.UpdateWebsiteStatus(website, model.DOWN)
-					}
-				}
-			}
-		}(channel, i)
+		go worker(channel, i, checker)
 	}
 
 	for {
 		for _, website := range model.GetWebsiteList() {
 			channel <- website
 		}
-		time.Sleep(30 * time.Second)
+		time.Sleep(time.Second * time.Duration(delay))
 	}
 }
