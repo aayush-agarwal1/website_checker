@@ -1,0 +1,11 @@
+# Server configurations
+server:
+  host: "127.0.0.1"
+  port: 8080
+  readTimeoutSeconds: 10
+  writeTimeoutSeconds: 10
+
+# Cron configurations
+cron:
+  concurrency: 3
+  delaySeconds: 30

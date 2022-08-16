@@ -9,36 +9,39 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"strconv"
 	"time"
 )
 
-func launchWebsiteCheckerCron(conf map[string]string) {
-	concurrency, _ := strconv.Atoi(conf["cron.concurrency"])
-	delay, _ := strconv.Atoi(conf["cron.delaySeconds"])
+func launchWebsiteCheckerCron(config utils.Config) {
+
+	concurrency := config.Cron.Concurrency
+	delay := config.Cron.DelaySeconds
+
 	go func() {
 		status_checker.ConcurrentStatusCheck(concurrency, delay)
 	}()
 	return
 }
 
-func launchWebServer(conf map[string]string) {
-	host := conf["server.host"]
-	port := conf["server.port"]
-	writeTimeoutSeconds, _ := strconv.Atoi(conf["server.writeTimeoutSeconds"])
-	readTimeoutSeconds, _ := strconv.Atoi(conf["server.readTimeoutSeconds"])
+func launchWebServer(config utils.Config) {
+
+	host := config.Server.Host
+	port := config.Server.Port
+	writeTimeout := config.Server.WriteTimeoutSeconds
+	readTimeout := config.Server.ReadTimeoutSeconds
+
 	router := mux.NewRouter()
 	router.HandleFunc("/websites", api.PostWebsites).Methods(http.MethodPost)
 	router.HandleFunc("/websites", api.GetWebsites).Methods(http.MethodGet)
-	log.Printf("Starting server at: %s:%s", host, port)
 
 	srv := &http.Server{
 		Addr:         host + ":" + port,
-		WriteTimeout: time.Second * time.Duration(writeTimeoutSeconds),
-		ReadTimeout:  time.Second * time.Duration(readTimeoutSeconds),
+		WriteTimeout: time.Second * writeTimeout,
+		ReadTimeout:  time.Second * readTimeout,
 		Handler:      router,
 	}
 
+	log.Printf("Starting server at: %s:%s", host, port)
 	go func() {
 		if err := srv.ListenAndServe(); err != nil {
 			log.Printf("%s\n", err)
@@ -48,7 +51,7 @@ func launchWebServer(conf map[string]string) {
 }
 
 func main() {
-	configFile := "application.properties"
+	configFile := "properties.yml"
 	conf := utils.ReadConfig(configFile)
 
 	launchWebsiteCheckerCron(conf)

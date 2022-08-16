@@ -20,7 +20,7 @@ func worker(channel chan string, workerNo int, checker StatusChecker) {
 	}
 }
 
-func ConcurrentStatusCheck(concurrency int, delay int) {
+func ConcurrentStatusCheck(concurrency int, delay time.Duration) {
 
 	channel := make(chan string, concurrency*2)
 	var checker StatusChecker = HTTPChecker{}
@@ -33,6 +33,6 @@ func ConcurrentStatusCheck(concurrency int, delay int) {
 		for _, website := range model.GetWebsiteList() {
 			channel <- website
 		}
-		time.Sleep(time.Second * time.Duration(delay))
+		time.Sleep(time.Second * delay)
 	}
 }
