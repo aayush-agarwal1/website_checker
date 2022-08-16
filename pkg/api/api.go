@@ -36,3 +36,9 @@ func PostWebsites(w http.ResponseWriter, r *http.Request) {
 
 	w.Write([]byte("Updated list of websites: " + strings.Join(model.GetWebsiteList(), ",")))
 }
+
+func GetWebsites(w http.ResponseWriter, r *http.Request) {
+	log.Printf("%s %s\n", r.Method, r.RequestURI)
+	out, _ := json.Marshal(model.GetWebsiteStatusMap())
+	w.Write(out)
+}

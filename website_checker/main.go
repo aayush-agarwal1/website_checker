@@ -21,6 +21,7 @@ func main() {
 	router := mux.NewRouter()
 	router.HandleFunc("/", basePath)
 	router.HandleFunc("/websites", api.PostWebsites).Methods(http.MethodPost)
+	router.HandleFunc("/websites", api.GetWebsites).Methods(http.MethodGet)
 	log.Printf("Starting server at: %s%s", host, port)
 
 	srv := &http.Server{
