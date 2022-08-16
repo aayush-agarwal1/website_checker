@@ -1,11 +1,12 @@
 package main
 
 import (
-	"errors"
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
 	"os"
+	"os/signal"
+	"time"
 )
 
 func basePath(w http.ResponseWriter, r *http.Request) {
@@ -14,16 +15,28 @@ func basePath(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	var host string = ""
-	var port string = ":8080"
+	host := "127.0.0.1"
+	port := ":8080"
 	router := mux.NewRouter()
 	router.HandleFunc("/", basePath)
-	log.Printf("Starting Server at: %s%s", host, port)
-	err := http.ListenAndServe(host+port, router)
-	if errors.Is(err, http.ErrServerClosed) {
-		log.Printf("Server closed\n")
-	} else if err != nil {
-		log.Printf("error starting server: %s\n", err)
-		os.Exit(1)
+	log.Printf("Starting server at: %s%s", host, port)
+
+	srv := &http.Server{
+		Addr:         host + port,
+		WriteTimeout: time.Second * 15,
+		ReadTimeout:  time.Second * 15,
+		Handler:      router,
 	}
+
+	go func() {
+		if err := srv.ListenAndServe(); err != nil {
+			log.Printf("%s\n", err)
+		}
+	}()
+
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt)
+	<-c
+	log.Printf("Shutting down server")
+	os.Exit(0)
 }
