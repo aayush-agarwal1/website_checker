@@ -3,9 +3,11 @@ package model
 type State string
 
 const (
-	UP   State = "UP"
-	DOWN       = "DOWN"
-	INIT       = "INIT"
+	UP             State = "UP"
+	DOWN           State = "DOWN"
+	INIT           State = "INIT"
+	INVALID_URI    State = "INVALID_URI"
+	DOES_NOT_EXIST State = "DOES_NOT_EXIST"
 )
 
 type WebsiteProperties struct {
@@ -40,14 +42,38 @@ func GetWebsiteList() (websites []string) {
 	return
 }
 
-func GetWebsiteMapObject() map[string]WebsiteProperties {
-	return websiteMapObject
+func GetWebsiteMapObject(websites []string) (localWebsiteMapObject map[string]WebsiteProperties) {
+	if (len(websites) == 0) || (len(websites) == 1 && websites[0] == "") {
+		localWebsiteMapObject = websiteMapObject
+	} else {
+		localWebsiteMapObject = make(map[string]WebsiteProperties)
+		for _, website := range websites {
+			websitePropertyMapping, isPresent := websiteMapObject[website]
+			if isPresent {
+				localWebsiteMapObject[website] = websitePropertyMapping
+			} else {
+				localWebsiteMapObject[website] = WebsiteProperties{Status: DOES_NOT_EXIST}
+			}
+		}
+	}
+	return
 }
 
-func GetWebsiteStatusMap() (websiteStatusMap map[string]State) {
-	websiteStatusMap = make(map[string]State)
-	for website := range websiteMapObject {
-		websiteStatusMap[website] = websiteMapObject[website].Status
+func GetWebsiteStatusMap(websites []string) (websiteStatusMap map[string]string) {
+	websiteStatusMap = make(map[string]string)
+	if (len(websites) == 0) || (len(websites) == 1 && websites[0] == "") {
+		for website := range websiteMapObject {
+			websiteStatusMap[website] = string(websiteMapObject[website].Status)
+		}
+	} else {
+		for _, website := range websites {
+			websiteProperties, isPresent := websiteMapObject[website]
+			if isPresent {
+				websiteStatusMap[website] = string(websiteProperties.Status)
+			} else {
+				websiteStatusMap[website] = string(DOES_NOT_EXIST)
+			}
+		}
 	}
 	return
 }

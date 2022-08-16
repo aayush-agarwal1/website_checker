@@ -38,7 +38,10 @@ func PostWebsites(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetWebsites(w http.ResponseWriter, r *http.Request) {
-	log.Printf("%s %s\n", r.Method, r.RequestURI)
-	out, _ := json.Marshal(model.GetWebsiteStatusMap())
+	name := r.URL.Query().Get("name")
+	log.Printf("%s %s %s\n", r.Method, r.RequestURI, name)
+	websites := strings.Split(name, ",")
+	var out []byte
+	out, _ = json.Marshal(model.GetWebsiteStatusMap(websites))
 	w.Write(out)
 }
