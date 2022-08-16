@@ -1,5 +1,6 @@
 build:
-	go build -o build/website_checker website_checker/main.go
+	go clean
+	go build -o build/website_checker -a website_checker/main.go
 
 run:
 	build/website_checker properties.yml
