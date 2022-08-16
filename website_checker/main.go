@@ -14,7 +14,7 @@ import (
 )
 
 func launchWebsiteCheckerCron(conf map[string]string) {
-	concurrency, _ := strconv.Atoi(conf["concurrency"])
+	concurrency, _ := strconv.Atoi(conf["cron.concurrency"])
 	delay, _ := strconv.Atoi(conf["cron.delaySeconds"])
 	go func() {
 		status_checker.ConcurrentStatusCheck(concurrency, delay)
