@@ -8,4 +8,4 @@ server:
 # Cron configurations
 cron:
   concurrency: 3
-  delaySeconds: 30
+  delaySeconds: 60
