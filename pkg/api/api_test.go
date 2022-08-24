@@ -11,12 +11,12 @@ import (
 )
 
 const (
-	postResponse string = "Updated list of websites: www.google.com,www.facebook.com,www.fakewebsite1.com"
+	postResponse string = "Updated list of websites: www.google.com,www.facebook.com,www.fakewebsite1.com,thisisnotaurl"
 )
 
 func TestPostWebsites(t *testing.T) {
 
-	requestBody, err := json.Marshal(postRequestBody{Websites: []string{"www.google.com", "www.facebook.com", "www.fakewebsite1.com"}})
+	requestBody, err := json.Marshal(postRequestBody{Websites: []string{"www.google.com", "www.facebook.com", "www.fakewebsite1.com", "thisisnotaurl"}})
 	if err != nil {
 		t.Errorf(err.Error())
 	}
@@ -43,9 +43,10 @@ func TestGetWebsites(t *testing.T) {
 		queryParam     string
 		wantedResponse string
 	}{
-		{"", "{\"www.facebook.com\":\"INIT\",\"www.fakewebsite1.com\":\"INIT\",\"www.google.com\":\"INIT\"}"},
+		{"", "{\"thisisnotaurl\":\"INVALID_URL\",\"www.facebook.com\":\"INIT\",\"www.fakewebsite1.com\":\"INIT\",\"www.google.com\":\"INIT\"}"},
 		{"?name=www.google.com", "{\"www.google.com\":\"INIT\"}"},
 		{"?name=www.facebook.com,www.fakewebsite1.com", "{\"www.facebook.com\":\"INIT\",\"www.fakewebsite1.com\":\"INIT\"}"},
+		{"?name=www.youtube.com", "{\"www.youtube.com\":\"DOES_NOT_EXIST\"}"},
 	}
 
 	for i, tt := range tests {

@@ -1,6 +1,8 @@
 package model
 
-import "net/url"
+import (
+	"github.com/aayush-agarwal1/website_checker/pkg/utils"
+)
 
 type State string
 
@@ -8,7 +10,7 @@ const (
 	UP             State = "UP"
 	DOWN           State = "DOWN"
 	INIT           State = "INIT"
-	INVALID_URI    State = "INVALID_URI"
+	INVALID_URL    State = "INVALID_URL"
 	DOES_NOT_EXIST State = "DOES_NOT_EXIST"
 )
 
@@ -34,13 +36,13 @@ func newWebsiteMap() map[string]WebsiteProperties {
 func InsertNewWebsite(website string) (wasPresent bool) {
 	_, wasPresent = websiteMapObject[website]
 	if !wasPresent {
-		if _, err := url.ParseRequestURI("https://" + website); err != nil {
+		if isURL := utils.IsUrl("https://" + website); isURL {
 			websiteMapObject[website] = WebsiteProperties{
-				Status: INVALID_URI,
+				Status: INIT,
 			}
 		} else {
 			websiteMapObject[website] = WebsiteProperties{
-				Status: INIT,
+				Status: INVALID_URL,
 			}
 		}
 	}
@@ -56,7 +58,7 @@ func GetWebsiteList() (websites []string) {
 
 func GetValidWebsiteList() (websites []string) {
 	for website, properties := range websiteMapObject {
-		if INVALID_URI != properties.Status {
+		if INVALID_URL != properties.Status {
 			websites = append(websites, website)
 		}
 	}
