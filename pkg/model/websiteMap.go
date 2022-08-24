@@ -1,5 +1,7 @@
 package model
 
+import "net/url"
+
 type State string
 
 const (
@@ -29,12 +31,17 @@ func newWebsiteMap() map[string]WebsiteProperties {
 	}
 }
 
-func InsertNewWebsite(website string) (err error, wasPresent bool) {
-	err = nil
+func InsertNewWebsite(website string) (wasPresent bool) {
 	_, wasPresent = websiteMapObject[website]
 	if !wasPresent {
-		websiteMapObject[website] = WebsiteProperties{
-			Status: INIT,
+		if _, err := url.ParseRequestURI("https://" + website); err != nil {
+			websiteMapObject[website] = WebsiteProperties{
+				Status: INVALID_URI,
+			}
+		} else {
+			websiteMapObject[website] = WebsiteProperties{
+				Status: INIT,
+			}
 		}
 	}
 	return
@@ -43,6 +50,15 @@ func InsertNewWebsite(website string) (err error, wasPresent bool) {
 func GetWebsiteList() (websites []string) {
 	for website := range websiteMapObject {
 		websites = append(websites, website)
+	}
+	return
+}
+
+func GetValidWebsiteList() (websites []string) {
+	for website, properties := range websiteMapObject {
+		if INVALID_URI != properties.Status {
+			websites = append(websites, website)
+		}
 	}
 	return
 }

@@ -23,14 +23,10 @@ func PostWebsites(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for _, website := range websites.Websites {
-		if err, wasPresent := model.InsertNewWebsite(website); err != nil {
-			log.Fatalf("Encountered error while inserting website `%s` into model: %s", website, err.Error())
+		if wasPresent := model.InsertNewWebsite(website); wasPresent {
+			log.Printf("Website `%s` was already in model", website)
 		} else {
-			if wasPresent {
-				log.Printf("Website `%s` was already in model", website)
-			} else {
-				log.Printf("Inserted website `%s` into model", website)
-			}
+			log.Printf("Inserted website `%s` into model", website)
 		}
 	}
 	w.Write([]byte("Updated list of websites: " + strings.Join(model.GetWebsiteList(), ",")))

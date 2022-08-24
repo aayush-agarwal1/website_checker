@@ -30,7 +30,7 @@ func ConcurrentStatusCheck(concurrency int, delay time.Duration) {
 	}
 
 	for {
-		for _, website := range model.GetWebsiteList() {
+		for _, website := range model.GetValidWebsiteList() {
 			channel <- website
 		}
 		time.Sleep(time.Second * delay)
