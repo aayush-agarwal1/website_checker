@@ -11,6 +11,8 @@ test:
 codeCoverage:
 	go test -v -coverpkg=./... ./...
 
+.PHONY: build
+
 postDummyData:
 	curl --location --request POST '127.0.0.1:8080/websites' \
     --header 'Content-Type: application/json' \
