@@ -1,4 +1,4 @@
-# Website Checker
+# WEBSITE CHECKER
 This Program was written for bootcamp project. It has two APIs:
 
 * GET /websites : Optionally receives list of websites and returns status of some or all websites stores in memory
@@ -10,16 +10,16 @@ Control+C can be used to exit at program. Program runs on 127.0.0.1:8080 as per 
 
 Website Names should not include http:// or https://
 
-## Status Types
+## STATUS TYPES
 
-* INIT
-* UP
-* DOWN
-* INVALID_URI
-* DOES_NOT_EXIST
+* INIT : Website is added to map but not polled yet
+* UP : Website is polled and is up
+* DOWN : Website is polled and is up
+* INVALID_URI : Website URI is invalid and not polled at all
+* DOES_NOT_EXIST : Website is not present in map
 
 
-## Makefile Commands
+## MAKEFILE COMMANDS
 
 * make build
 * make run
